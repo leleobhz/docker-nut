@@ -1,4 +1,4 @@
-#! /bin/bash -xe
+#! /bin/bash -e
 
 if [ -d /run/secrets ] && [ -s /run/secrets/$SECRET ] && [ ! -z "${SECRET+x}" ]; then
   API_PASSWORD=$(cat /run/secrets/$SECRET)
