@@ -1,9 +1,12 @@
-FROM debian:stable-slim as builder
+FROM docker.io/library/debian:stable-slim as builder
 
-RUN apt -y update \
+ARG branch
+
+RUN echo "Building ${branch} branch" \
+    && apt -y update \
     && apt -y install git make autoconf automake pkg-config libtool clang python3-dev libusb-1.0-0-dev libssl-dev libneon27-dev libltdl-dev gettext libcppunit-dev libnss3-dev augeas-tools libaugeas-dev augeas-lenses libi2c-dev libmodbus-dev libsnmp-dev libpowerman0-dev libfreeipmi-dev libipmimonitoring-dev libgpiod-dev libi2c-dev libavahi-common-dev libavahi-core-dev libavahi-client-dev libgd-dev \
     && cd /tmp/ \
-    && git clone --single-branch --depth 1 --branch v2.8.0-signed https://github.com/networkupstools/nut.git \
+    && git clone --single-branch --depth 1 --branch ${branch} https://github.com/networkupstools/nut.git \
     && cd nut \
     && ./autogen.sh \
     && ./configure --prefix=/nut --enable-inplace-runtime --with-all --with-ssl --with-libltdl --with-wrap \
@@ -11,7 +14,7 @@ RUN apt -y update \
     && make -j $(nproc --ignore=1) check \
     && make install 
 
-FROM debian:stable-slim as runner
+FROM docker.io/library/debian:stable-slim as runner
 
 COPY --from=builder /nut /nut
 
@@ -22,6 +25,8 @@ RUN apt -y update \
     && chown nut:nut -R /nut /var/state/ups \
     && apt -y clean \
     && rm -rf /var/cache/apt/*
+
+HEALTHCHECK CMD /nut/bin/upsc ups@localhost:3493 2>&1|grep -q stale && exit 1 || true
 
 ENV API_USER=upsmon \
     API_PASSWORD= \
