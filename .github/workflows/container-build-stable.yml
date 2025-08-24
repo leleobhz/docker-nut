@@ -1,4 +1,4 @@
-name: "[CI] Upstream v2.8.3"
+name: "[CI] Upstream v2.8.4"
 
 on:
   push:
@@ -9,7 +9,7 @@ on:
     - cron: '42 2 * * 6'
 
 env:
-  UPSTREAM_BRANCH: v2.8.3
+  UPSTREAM_BRANCH: v2.8.4
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}
 

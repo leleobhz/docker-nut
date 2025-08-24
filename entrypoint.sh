@@ -57,6 +57,15 @@ EOF
     if [ ! -z "$SDORDER" ]; then
       echo "        sdorder = $SDORDER" >> /nut/etc/ups.conf
     fi
+    if [ "$IGNORELB" = true ]; then
+      echo "        ignorelb" >> /nut/etc/ups.conf
+      if [ ! -z "$BATTERY_CHARGE_LOW" ]; then
+        echo "        override.battery.charge.low = $BATTERY_CHARGE_LOW" >> /nut/etc/ups.conf
+      else
+	echo "[WARN] IGNORELB set without BATTERY_CHARGE_LOW. Set to safe value"
+        echo "        override.battery.charge.low = 70" >> /nut/etc/ups.conf
+      fi
+    fi
   fi
   if [ -e /nut/etc/local/upsd.conf ]; then
     cp /nut/etc/local/upsd.conf /nut/etc/upsd.conf
