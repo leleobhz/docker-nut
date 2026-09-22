@@ -4,13 +4,13 @@ if [ -d /run/secrets ] && [ -s /run/secrets/$SECRET ] && [ ! -z "${SECRET+x}" ];
   API_PASSWORD=$(cat /run/secrets/$SECRET)
 fi
 
-if [ ! -d /nut/etc ]; then
-  mkdir -p /nut/etc
+if [ ! -d /nut/etc/nut ]; then
+  mkdir -p /nut/etc/nut
 fi
 
 if [ ! -e /nut/etc/.setup ]; then
   if [ -e /nut/etc/local/ups.conf ]; then
-    cp /nut/etc/local/ups.conf /nut/etc/ups.conf
+    cp /nut/etc/local/ups.conf /nut/etc/nut/ups.conf
   else
     if [ -z "$SERIAL" ] && [ $DRIVER = usbhid-ups ] ; then
       echo "** This container may not work without setting for SERIAL **"
@@ -22,60 +22,60 @@ if [ ! -e /nut/etc/.setup ]; then
         desc = "$DESCRIPTION"
 EOF
     if [ ! -z "$SUBDRIVER" ]; then
-      echo "        subdriver = \"$SUBDRIVER\"" >> /nut/etc/ups.conf
+      echo "        subdriver = \"$SUBDRIVER\"" >> /nut/etc/nut/ups.conf
     fi
     if [ ! -z "$PROTOCOL" ]; then
-      echo "        protocol = \"$PROTOCOL\"" >> /nut/etc/ups.conf
+      echo "        protocol = \"$PROTOCOL\"" >> /nut/etc/nut/ups.conf
     fi
     if [ ! -z "$PRODUCT" ]; then
-      echo "        product = \"$PRODUCT\"" >> /nut/etc/ups.conf
+      echo "        product = \"$PRODUCT\"" >> /nut/etc/nut/ups.conf
     fi
     if [ ! -z "$LANGID_FIX" ]; then
-      echo "        langid_fix = \"$LANGID_FIX\"" >> /nut/etc/ups.conf
+      echo "        langid_fix = \"$LANGID_FIX\"" >> /nut/etc/nut/ups.conf
     fi
     if [ "$NORATING" = true ]; then
-      echo "        norating" >> /nut/etc/ups.conf
+      echo "        norating" >> /nut/etc/nut/ups.conf
     fi
     if [ "$NOVENDOR" = true ]; then
-      echo "        novendor" >> /nut/etc/ups.conf
+      echo "        novendor" >> /nut/etc/nut/ups.conf
     fi
     if [ ! -z "$OVERRIDE_BATTERY_PACKS" ]; then
-      echo "        override.battery.packs = \"$OVERRIDE_BATTERY_PACKS\"" >> /nut/etc/ups.conf
+      echo "        override.battery.packs = \"$OVERRIDE_BATTERY_PACKS\"" >> /nut/etc/nut/ups.conf
     fi
     if [ ! -z "$SERIAL" ]; then
-      echo "        serial = \"$SERIAL\"" >> /nut/etc/ups.conf
+      echo "        serial = \"$SERIAL\"" >> /nut/etc/nut/ups.conf
     fi
     if [ ! -z "$POLLINTERVAL" ]; then
-      echo "        pollinterval = $POLLINTERVAL" >> /nut/etc/ups.conf
+      echo "        pollinterval = $POLLINTERVAL" >> /nut/etc/nut/ups.conf
     fi
     if [ ! -z "$VENDORID" ]; then
-      echo "        vendorid = $VENDORID" >> /nut/etc/ups.conf
+      echo "        vendorid = $VENDORID" >> /nut/etc/nut/ups.conf
     fi
     if [ ! -z "$PRODUCTID" ]; then
-      echo "        productid = \"$PRODUCTID\"" >> /nut/etc/ups.conf
+      echo "        productid = \"$PRODUCTID\"" >> /nut/etc/nut/ups.conf
     fi
     if [ ! -z "$SDORDER" ]; then
-      echo "        sdorder = $SDORDER" >> /nut/etc/ups.conf
+      echo "        sdorder = $SDORDER" >> /nut/etc/nut/ups.conf
     fi
     if [ "$IGNORELB" = true ]; then
-      echo "        ignorelb" >> /nut/etc/ups.conf
+      echo "        ignorelb" >> /nut/etc/nut/ups.conf
       if [ ! -z "$BATTERY_CHARGE_LOW" ]; then
-        echo "        override.battery.charge.low = $BATTERY_CHARGE_LOW" >> /nut/etc/ups.conf
+        echo "        override.battery.charge.low = $BATTERY_CHARGE_LOW" >> /nut/etc/nut/ups.conf
       else
 	echo "[WARN] IGNORELB set without BATTERY_CHARGE_LOW. Set to safe value"
-        echo "        override.battery.charge.low = 70" >> /nut/etc/ups.conf
+        echo "        override.battery.charge.low = 70" >> /nut/etc/nut/ups.conf
       fi
     fi
   fi
   if [ -e /nut/etc/local/upsd.conf ]; then
-    cp /nut/etc/local/upsd.conf /nut/etc/upsd.conf
+    cp /nut/etc/local/upsd.conf /nut/etc/nut/upsd.conf
   else
-    cat <<EOF >>/nut/etc/upsd.conf
+    cat <<EOF >>/nut/etc/nut/upsd.conf
 LISTEN 0.0.0.0
 EOF
   fi
   if [ -e /nut/etc/local/upsd.users ]; then
-    cp /nut/etc/local/upsd.users /nut/etc/upsd.users
+    cp /nut/etc/local/upsd.users /nut/etc/nut/upsd.users
   else
     cat <<EOF >>/nut/etc/upsd.users
 [$API_USER]
@@ -84,7 +84,7 @@ EOF
 EOF
   fi
   if [ -e /nut/etc/local/upsmon.conf ]; then
-    cp /nut/etc/local/upsmon.conf /nut/etc/upsmon.conf
+    cp /nut/etc/local/upsmon.conf /nut/etc/nut/upsmon.conf
   else
     cat <<EOF >>/nut/etc/upsmon.conf
 MONITOR $NAME@localhost 1 $API_USER $API_PASSWORD $SERVER
@@ -94,8 +94,8 @@ EOF
   touch /nut/etc/.setup
 fi
 
-chgrp $GROUP /nut/etc/*
-chmod 640 /nut/etc/*
+chgrp $GROUP /nut/etc/nut/*
+chmod 640 /nut/etc/nut/*
 mkdir -p -m 2750 /dev/shm/nut
 chown $USER:$GROUP /dev/shm/nut
 if [ -f $PORT ]; then

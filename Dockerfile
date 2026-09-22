@@ -20,7 +20,7 @@ FROM docker.io/library/debian:stable-slim as runner
 COPY --from=builder /nut /nut
 
 RUN apt -y update \
-    && apt -y install python3 gettext libusb-1.0-0 libssl3 libneon27 libltdl7 libnss3 libaugeas0 augeas-lenses libi2c0 libmodbus5 libsnmp40 libsnmp-base libpowerman0 libfreeipmi17 libipmimonitoring6 libgpiod3 libavahi-core7 libavahi-client3 libgd3 libnsl2 libglib2.0-0 \
+    && apt -y install catatonit python3 gettext libusb-1.0-0 libssl3 libneon27 libltdl7 libnss3 libaugeas0 augeas-lenses libi2c0 libmodbus5 libsnmp40 libsnmp-base libpowerman0 libfreeipmi17 libipmimonitoring6 libgpiod3 libavahi-core7 libavahi-client3 libgd3 libnsl2 libglib2.0-0 \
     && ldconfig \
     && useradd -r nut \
     && mkdir -p /var/state/ups \
@@ -47,4 +47,4 @@ ENV API_USER=upsmon \
 
 EXPOSE 3493
 COPY --chmod=0755 entrypoint.sh /
-ENTRYPOINT /entrypoint.sh
+ENTRYPOINT ["/usr/bin/catatonit", "-g", "--", "/entrypoint.sh"]
