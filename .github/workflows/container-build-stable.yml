@@ -1,6 +1,7 @@
 name: "[CI] Upstream latest-stable"
 
 on:
+  workflow_dispatch:
   push:
     paths:
       - 'Dockerfile'
